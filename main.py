@@ -10,6 +10,8 @@ import numpy as np
 from scipy.stats.distributions import chi2
 from collections import namedtuple
 
+# Fix seed
+np.random.seed(100)
 
 # Object detection probability
 P_D = 0.98
@@ -101,7 +103,7 @@ def _plot(X_hat):
 
     fig, ax = plt.subplots()
 
-    # Plot estimates
+    # Plot estimates for first target only
     epoch = 45
     x_hat = np.asarray([t[0][0] for ii, t in enumerate(X_hat) if ii < epoch])
     y_hat = np.asarray([t[0][1] for ii, t in enumerate(X_hat) if ii < epoch])

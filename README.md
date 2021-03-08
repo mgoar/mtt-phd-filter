@@ -41,9 +41,25 @@ First, a prediction is done for the ![J_{\gamma, k}
 ](https://render.githubusercontent.com/render/math?math=%5Ctextstyle+J_%7B%5Cgamma%2C+k%7D%0A) birth targets. Existing targets generate ![J_{k-1}](https://render.githubusercontent.com/render/math?math=%5Ctextstyle+J_%7Bk-1%7D) components in the GM with parameters:
 
 ![\begin{align*}
-w_{k \vert k-1}^{J_{k-1}+(i)} & = p_{S, k} w_{k-1}^{(j)} \\
-m_{k \vert k-1}^{J_{k-1}+(i)} & = F_{k-1} m_{k-1}^{(j)}, P_{k \vert k-1}^{J_{k-1}+(i)} = F_{k-1} P_{k-1}^{(j)} F_{k-1}^{T} + Q_{k-1}
-\end{align*}](https://render.githubusercontent.com/render/math?math=%5Cdisplaystyle+%5Cbegin%7Balign%2A%7D%0Aw_%7Bk+%5Cvert+k-1%7D%5E%7BJ_%7Bk-1%7D%2B%28i%29%7D+%26+%3D+p_%7BS%2C+k%7D+w_%7Bk-1%7D%5E%7Bj%7D+%5C%5C%0Am_%7Bk+%5Cvert+k-1%7D%5E%7BJ_%7Bk-1%7D%2B%28i%29%7D+%26+%3D+F_%7Bk-1%7D+m_%7Bk-1%7D%5E%7B%28j%29%7D%2C+P_%7Bk+%5Cvert+k-1%7D%5E%7BJ_%7Bk-1%7D%2B%28i%29%7D+%3D+F_%7Bk-1%7D+P_%7Bk-1%7D%5E%7B%28j%29%7D+F_%7Bk-1%7D%5E%7BT%7D+%2B+Q_%7Bk-1%7D%0A%5Cend%7Balign%2A%7D)
+& i = 0 \\
+& \textrm{for }  j = 1, \dots, J_{\gamma, k} \\
+& \quad i := i +1 \\
+& \quad w_{k|k-1}^{(i)} = w_{\gamma,k}^{j}, m_{k|k-1}^{(i)} = m_{\gamma|k}^{(j)}, P_{k|k-1}^{(i)}=P_{\gamma|k}^{(j)} \\
+& \textrm{end} \\
+& \textrm{for }  j = 1, \dots, J_{\beta, k} \\
+& \quad \textrm{for }  j = 1, \dots, J_{k-1} \\
+& \quad \quad i := i +1 \\
+& \quad \quad w_{k|k-1}^{(i)} = w_{k-1}^{l} w_{\beta, k}^{j}, \\
+& \quad \quad m_{k|k-1}^{(i)} = d_{\beta, k-1}^{(j)}+F_{\beta, k-1}^{(j)}m_{k-1}^{(l)}, \\
+& \quad \quad P_{k|k-1}^{(i)} = Q_{\beta, k-1}^{(j)}+F_{\beta, k-1}^{(j)}P_{k-1}^{(l)}(F_{\beta, k-1}^{(j)})^{T}, \\
+& \quad \textrm{end} \\
+& \textrm{end} \\
+& \textrm{for }  j = 1, \dots, J_{k-1} \\
+& \quad i := i +1 \\
+& \quad w_{k|k-1}^{(i)} = p_{S,k}w_{\k-1}^{(j)}, m_{k|k-1}^{(i)} = F_{k-1} m_{k-1}^{(j)}, P_{k|k-1}^{(i)}=Q_{k-1}+F_{k-1}P_{k-1}^{(j)}F_{k-1}^{T} \\
+& \textrm{end} \\
+& J_{k|k-1} = i
+\end{align*}](https://render.githubusercontent.com/render/math?math=%5Cdisplaystyle+%5Cbegin%7Balign%2A%7D%0A%26+i+%3D+0+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7B%5Cgamma%2C+k%7D+%5C%5C%0A%26+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+w_%7B%5Cgamma%2Ck%7D%5E%7Bj%7D%2C+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+m_%7B%5Cgamma%7Ck%7D%5E%7B%28j%29%7D%2C+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D%3DP_%7B%5Cgamma%7Ck%7D%5E%7B%28j%29%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7B%5Cbeta%2C+k%7D+%5C%5C%0A%26+%5Cquad+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7Bk-1%7D+%5C%5C%0A%26+%5Cquad+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+w_%7Bk-1%7D%5E%7Bl%7D+w_%7B%5Cbeta%2C+k%7D%5E%7Bj%7D%2C+%5C%5C%0A%26+%5Cquad+%5Cquad+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+d_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%2BF_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7Dm_%7Bk-1%7D%5E%7B%28l%29%7D%2C+%5C%5C%0A%26+%5Cquad+%5Cquad+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+Q_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%2BF_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7DP_%7Bk-1%7D%5E%7B%28l%29%7D%28F_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%29%5E%7BT%7D%2C+%5C%5C%0A%26+%5Cquad+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7Bk-1%7D+%5C%5C%0A%26+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+p_%7BS%2Ck%7Dw_%7B%5Ck-1%7D%5E%7B%28j%29%7D%2C+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+F_%7Bk-1%7D+m_%7Bk-1%7D%5E%7B%28j%29%7D%2C+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D%3DQ_%7Bk-1%7D%2BF_%7Bk-1%7DP_%7Bk-1%7D%5E%7B%28j%29%7DF_%7Bk-1%7D%5E%7BT%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+J_%7Bk%7Ck-1%7D+%3D+i%0A%5Cend%7Balign%2A%7D)
 
 
 #### Update
@@ -51,15 +67,31 @@ m_{k \vert k-1}^{J_{k-1}+(i)} & = F_{k-1} m_{k-1}^{(j)}, P_{k \vert k-1}^{J_{k-1
 Similarly, a Kalman filter update is performed on the detected objects (i.e., for measurements associated to an existing target) with posterior parameters:
 
 ![\begin{align*}
-w_k & = p_{D,k} w_{k \vert k-1}^{(j)} \mathcal{N} (z; \hat{z}_{k \vert k-1}^{(j)}, S_{k}^{(j)}) \\
-m_k & = m_{k \vert k-1}^{(j)} + K_{k}^{(j)} (z-\hat{z}_{k \vert k-1}^{(j)}) \\
-P_k & = P_{k \vert k}^{(j)}
-\end{align*}](https://render.githubusercontent.com/render/math?math=%5Cdisplaystyle+%5Cbegin%7Balign%2A%7D%0Aw_k+%26+%3D+p_%7BD%2Ck%7D+w_%7Bk+%5Cvert+k-1%7D%5E%7B%28j%29%7D+%5Cmathcal%7BN%7D+%28z%3B+%5Chat%7Bz%7D_%7Bk+%5Cvert+k-1%7D%5E%7Bh%7D%2C+S_%7Bk%7D%5E%7Bh%7D%29+%5C%5C%0Am_k+%26+%3D+m_%7Bk+%5Cvert+k-1%7D%5E%7B%28j%29%7D+%2B+K_%7Bk%7D%5E%7B%28j%29%7D+%28z-%5Chat%7Bz%7D_%7Bk+%5Cvert+k-1%7D%5E%7B%28j%29%7D%29+%5C%5C%0AP_k+%26+%3D+P_%7Bk+%5Cvert+k%7D%5E%7B%28j%29%7D%0A%5Cend%7Balign%2A%7D)
+& i = 0 \\
+& \textrm{for }  j = 1, \dots, J_{\gamma, k} \\
+& \quad i := i +1 \\
+& \quad w_{k|k-1}^{(i)} = w_{\gamma,k}^{j}, m_{k|k-1}^{(i)} = m_{\gamma|k}^{(j)}, P_{k|k-1}^{(i)}=P_{\gamma|k}^{(j)} \\
+& \textrm{end} \\
+& \textrm{for }  j = 1, \dots, J_{\beta, k} \\
+& \quad \textrm{for }  j = 1, \dots, J_{k-1} \\
+& \quad \quad i := i +1 \\
+& \quad \quad w_{k|k-1}^{(i)} = w_{k-1}^{l} w_{\beta, k}^{j}, \\
+& \quad \quad m_{k|k-1}^{(i)} = d_{\beta, k-1}^{(j)}+F_{\beta, k-1}^{(j)}m_{k-1}^{(l)}, \\
+& \quad \quad P_{k|k-1}^{(i)} = Q_{\beta, k-1}^{(j)}+F_{\beta, k-1}^{(j)}P_{k-1}^{(l)}(F_{\beta, k-1}^{(j)})^{T}, \\
+& \quad \textrm{end} \\
+& \textrm{end} \\
+& \textrm{for }  j = 1, \dots, J_{k-1} \\
+& \quad i := i +1 \\
+& \quad w_{k|k-1}^{(i)} = p_{S,k}w_{\k-1}^{(j)}, m_{k|k-1}^{(i)} = F_{k-1} m_{k-1}^{(j)}, P_{k|k-1}^{(i)}=Q_{k-1}+F_{k-1}P_{k-1}^{(j)}F_{k-1}^{T} \\
+& \textrm{end} \\
+& J_{k|k-1} = i
+\end{align*}](https://render.githubusercontent.com/render/math?math=%5Cdisplaystyle+%5Cbegin%7Balign%2A%7D%0A%26+i+%3D+0+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7B%5Cgamma%2C+k%7D+%5C%5C%0A%26+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+w_%7B%5Cgamma%2Ck%7D%5E%7Bj%7D%2C+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+m_%7B%5Cgamma%7Ck%7D%5E%7B%28j%29%7D%2C+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D%3DP_%7B%5Cgamma%7Ck%7D%5E%7B%28j%29%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7B%5Cbeta%2C+k%7D+%5C%5C%0A%26+%5Cquad+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7Bk-1%7D+%5C%5C%0A%26+%5Cquad+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+w_%7Bk-1%7D%5E%7Bl%7D+w_%7B%5Cbeta%2C+k%7D%5E%7Bj%7D%2C+%5C%5C%0A%26+%5Cquad+%5Cquad+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+d_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%2BF_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7Dm_%7Bk-1%7D%5E%7B%28l%29%7D%2C+%5C%5C%0A%26+%5Cquad+%5Cquad+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+Q_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%2BF_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7DP_%7Bk-1%7D%5E%7B%28l%29%7D%28F_%7B%5Cbeta%2C+k-1%7D%5E%7B%28j%29%7D%29%5E%7BT%7D%2C+%5C%5C%0A%26+%5Cquad+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+%5Ctextrm%7Bfor+%7D++j+%3D+1%2C+%5Cdots%2C+J_%7Bk-1%7D+%5C%5C%0A%26+%5Cquad+i+%3A%3D+i+%2B1+%5C%5C%0A%26+%5Cquad+w_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+p_%7BS%2Ck%7Dw_%7B%5Ck-1%7D%5E%7B%28j%29%7D%2C+m_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D+%3D+F_%7Bk-1%7D+m_%7Bk-1%7D%5E%7B%28j%29%7D%2C+P_%7Bk%7Ck-1%7D%5E%7B%28i%29%7D%3DQ_%7Bk-1%7D%2BF_%7Bk-1%7DP_%7Bk-1%7D%5E%7B%28j%29%7DF_%7Bk-1%7D%5E%7BT%7D+%5C%5C%0A%26+%5Ctextrm%7Bend%7D+%5C%5C%0A%26+J_%7Bk%7Ck-1%7D+%3D+i%0A%5Cend%7Balign%2A%7D)
 
-The weights must take into account clutter intensity by dividing them by the term ![\kappa_{k} (z) + \sum_{i=1}^{J_{k \vert k-1}} w_k^{(i)}](https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%5Ckappa_%7Bk%7D+%28z%29+%2B+%5Csum_%7Bi%3D1%7D%5E%7BJ_%7Bk+%5Cvert+k-1%7D%7D+w_k%5E%7B%28i%29%7D).
-
+The weights must take into account clutter intensity by dividing them by the term ![\kappa_k (z) + \sum_{i=1}^{J_{k|k-1}} w_k ^{(lJ_{k|k-1}+i)} \quad  \textrm{for } j=1, \dots, J_{k|k-1}
+](https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%5Ckappa_k+%28z%29+%2B+%5Csum_%7Bi%3D1%7D%5E%7BJ_%7Bk%7Ck-1%7D%7D+w_k+%5E%7B%28lJ_%7Bk%7Ck-1%7D%2Bi%29%7D+%5Cquad++%5Ctextrm%7Bfor+%7D+j%3D1%2C+%5Cdots%2C+J_%7Bk%7Ck-1%7D%0A)
 
 ---
+
 ## References
 <a id="1">[1]</a>
 Vo, B. N., & Ma, W. K. (2006). The Gaussian mixture probability hypothesis density filter. IEEE Transactions on signal processing, 54(11), 4091-4104.

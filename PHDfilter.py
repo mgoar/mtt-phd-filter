@@ -145,7 +145,7 @@ class PHDfilter:
         # Get a mean estimate of the cardinality of objects by taking the summation of the weights of the Gaussian components rounded to the nearest integer
         n = np.min([np.rint(np.sum(np.exp(self.w))), self.w.size]).astype(int)
 
-        # Extract n object states form the means of the n Gaussiaon cmponents with the highest weights
+        # Extract n object states from the means of the n Gaussian components with the highest weights
         idx_w_sorted = np.argsort(self.w)[::-1]
 
         temp = [self.obj_state[ii] for ii in idx_w_sorted]
