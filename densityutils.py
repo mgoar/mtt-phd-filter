@@ -15,11 +15,11 @@ def moment_matching(w, gauss):
         P_ = np.zeros(gauss[0].P.shape)
 
         for idx, g in enumerate(gauss):
-            x_ = x_ + w_[idx]*gauss[idx].x
+            x_ = x_ + w_[idx] * gauss[idx].x
 
         for idx, g in enumerate(gauss):
-            P_ = P_ + w_[idx]*gauss[idx].P + w_[idx] * \
-                np.matmul((gauss[idx].x-x_), (gauss[idx].x-x_).T)
+            P_ = P_ + w_[idx] * gauss[idx].P + w_[idx] * \
+                np.matmul((gauss[idx].x - x_), (gauss[idx].x - x_).T)
 
         return x_, P_
 
@@ -31,8 +31,8 @@ def normalize_log_w(wghts):
     else:
         w_temp = wghts[np.argsort(-wghts)]
         log_sum = np.max(
-            w_temp)+np.log(1+np.sum(np.exp(wghts[np.argsort(-wghts)[1:]]-np.max(w_temp))))
-        return wghts-log_sum, log_sum
+            w_temp) + np.log(1 + np.sum(np.exp(wghts[np.argsort(-wghts)[1:]] - np.max(w_temp))))
+        return wghts - log_sum, log_sum
 
 
 def prune(w, threshold: float):
@@ -87,7 +87,7 @@ def merge(w, hypotheses, M):
 
             w[Ij] = np.log(1e-32)
 
-            el = el+1
+            el = el + 1
 
         return np.squeeze(w_merged), merged
 

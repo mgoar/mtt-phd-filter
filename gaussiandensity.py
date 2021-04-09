@@ -10,13 +10,13 @@ GaussState = namedtuple('GaussState', ['x', 'P'])
 
 
 @dataclass
-class GaussianDensity:
+class gaussiandensity:
     """Gaussian density class"""
 
     def predict(state: namedtuple, motion_model: motionmodel):
 
         state_ = GaussState(motion_model.f(state.x), np.matmul(motion_model.F(
-            state.x), state.P).dot(motion_model.F(state.x).T)+motion_model.Q)
+            state.x), state.P).dot(motion_model.F(state.x).T) + motion_model.Q)
 
         return state_
 
@@ -29,16 +29,16 @@ class GaussianDensity:
         S_ = np.matmul(H_, state.P).dot(H_.T) + meas_model.R
 
         # Make sure matrix S is positive definite
-        S_ = (S_+S_.T)/2
+        S_ = (S_ + S_.T) / 2
 
         # S^(-1)
         Sinv = np.linalg.inv(S_)
 
         # Kalman gain
-        K = state.P*H_.T*Sinv
+        K = np.matmul(state.P, H_.T).dot(Sinv)
 
-        state_ = GaussState(state.x + K*(z-measmodel.h(state.x)),
-                            (np.eye(np.size(state.x)[0]-K*H_))*state.P)
+        state_ = GaussState(state.x + np.matmul(K, z - measmodel.h(state.x)),
+                            (np.eye(np.size(state.x)[0] - K * H_)) * state.P)
 
         return state_
 
@@ -51,7 +51,7 @@ class GaussianDensity:
         S_ = np.matmul(H_, state.P).dot(H_.T) + meas_model.R
 
         # Make sure matrix S is positive definite
-        S_ = (S_+S_.T)/2
+        S_ = (S_ + S_.T) / 2
 
         z_hat = meas_model.h(state.x)
 
@@ -72,7 +72,7 @@ class GaussianDensity:
         S_ = np.matmul(H_, state.P).dot(H_.T) + meas_model.R
 
         # Make sure matrix S is positive definite
-        S_ = (S_+S_.T)/2
+        S_ = (S_ + S_.T) / 2
 
         # S^(-1)
         Sinv = np.linalg.inv(S_)

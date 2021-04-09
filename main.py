@@ -1,5 +1,5 @@
-import GaussianDensity
-import PHDfilter
+import gaussiandensity
+import phdfilter
 import modelgen
 import motionmodel
 import measmodel
@@ -10,9 +10,6 @@ import numpy as np
 from scipy.stats.distributions import chi2
 from collections import namedtuple
 
-# Fix seed
-np.random.seed(100)
-
 # Object detection probability
 P_D = 0.98
 
@@ -22,7 +19,7 @@ P_S = 0.99
 # Clutter rate
 lambda_c = 5
 
-gaussianDensity = GaussianDensity.GaussianDensity()
+gaussianDensity = gaussiandensity.gaussiandensity()
 
 # Sensor model - range/bearing model
 range_c = np.array([[-1000, 1000], [-np.pi, np.pi]])
@@ -39,24 +36,24 @@ t_d = np.zeros([n_b])
 PHDComp = namedtuple('PHDComp', ['x', 'P'])
 
 # Track 0
-x_0 = PHDComp(np.array([0, 0, 5, 0, np.pi/180]), [])
+x_0 = PHDComp(np.array([0, 0, 5, 0, np.pi / 180]), [])
 t_b[0] = 0
 t_d[0] = 49
 
 # Track 1
-x_1 = PHDComp(np.array([20, 20, -20, 0, np.pi/90]), [])
+x_1 = PHDComp(np.array([20, 20, -20, 0, np.pi / 90]), [])
 t_b[1] = 19
 t_d[1] = 69
 
 # Track 2
-x_2 = PHDComp(np.array([-20, 10, -10, 0, np.pi/360]), [])
+x_2 = PHDComp(np.array([-20, 10, -10, 0, np.pi / 360]), [])
 t_b[2] = 39
 t_d[2] = 89
 
 # Track 3
-x_3 = PHDComp(np.array([-10, -10, 8, 0, np.pi/270]), [])
+x_3 = PHDComp(np.array([-10, -10, 8, 0, np.pi / 270]), [])
 t_b[3] = 59
-t_d[3] = K-1
+t_d[3] = K - 1
 
 x_ = []
 
@@ -67,18 +64,18 @@ x_.append(x_3.x)
 
 Birth = namedtuple('Birth', ['w', 'x', 'P'])
 birth_model = Birth(np.repeat([np.log(.03)], 4), x_, [
-                    np.diag(np.square([1, 1, 1, np.pi/90, np.pi/90]))]*4)
+                    np.diag(np.square([1, 1, 1, np.pi / 90, np.pi / 90]))] * 4)
 
 # Non-linear CT motion model
 T = 1
 sigmaV = 1
-sigmaOmega = np.pi/180
+sigmaOmega = np.pi / 180
 motion_model = motionmodel.motionmodel()
 motion_model.CTmodel(T, sigmaV, sigmaOmega)
 
 # Non-linear range/bearing measurement model
 sigma_r = 5
-sigma_b = np.pi/180
+sigma_b = np.pi / 180
 s = np.array([300, 400])
 meas_model = measmodel.measmodel()
 meas_model.rangebearingmeasmodel(sigma_r, sigma_b, s)
@@ -103,8 +100,8 @@ def _plot(X_hat):
 
     fig, ax = plt.subplots()
 
-    # Plot estimates for first target only
-    epoch = 45
+    # Plot estimates first object
+    epoch = 49
     x_hat = np.asarray([t[0][0] for ii, t in enumerate(X_hat) if ii < epoch])
     y_hat = np.asarray([t[0][1] for ii, t in enumerate(X_hat) if ii < epoch])
 
@@ -113,6 +110,7 @@ def _plot(X_hat):
     # Plot ground truth
     x_true = np.array([x_0.x[0]])
     y_true = np.array([x_0.x[1]])
+
     for idx, obj in enumerate(Obj.X):
         # Cardinality
         N = len(obj)
@@ -129,14 +127,19 @@ def _plot(X_hat):
            title='PHD filter recursion')
 
     ax.grid()
-    ax.set_xlim([-300, 300])
-    ax.set_ylim([-300, 300])
+    ax.set_xlim([-500, 500])
+    ax.set_ylim([-500, 500])
 
     plt.legend(('PHD filter', 'Ground truth'),
                loc='upper right')
-    
+
     ax.set_aspect('equal', 'box')
     plt.show()
+
+
+def is_empty(l):
+
+    return all(is_empty(i) if isinstance(i, list) else False for i in l)
 
 
 def GMPHDfilter():
@@ -145,10 +148,9 @@ def GMPHDfilter():
 
     estimates = []
 
-    phdFilter = PHDfilter.PHDfilter(gaussianDensity, birth_model)
+    phdFilter = phdfilter.phdfilter(gaussianDensity, birth_model)
 
     for k in range(K):
-
         # Update
         phdFilter.update(Z[k], meas_model, tracking_model.P_D,
                          tracking_model.intensity_c, gating_size)
@@ -169,7 +171,11 @@ def main():
 
     phdEstimates = GMPHDfilter()
 
-    _plot(phdEstimates)
+    # Check for non-empty estimates
+    if(is_empty(phdEstimates)):
+        print('=> PHD filter obtained no estimates.')
+    else:
+        _plot(phdEstimates)
 
 
 if __name__ == "__main__":

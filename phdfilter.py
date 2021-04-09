@@ -1,8 +1,8 @@
 import numpy as np
-import GaussianDensity
+import gaussiandensity
 import motionmodel
 import measmodel
-import DensityUtils
+import densityutils
 from dataclasses import dataclass
 from collections import namedtuple
 
@@ -10,14 +10,17 @@ PHDComp = namedtuple('PHDComp', ['x', 'P'])
 
 
 @dataclass
-class PHDfilter:
+class phdfilter:
     """Probability Hypothesis Density (PHD) class"""
 
-    density: GaussianDensity
+    density: gaussiandensity
     w: np.ndarray
     obj_state: np.ndarray
 
-    def __init__(self, density_handle: GaussianDensity, birth_model: namedtuple):
+    def __init__(
+            self,
+            density_handle: gaussiandensity,
+            birth_model: namedtuple):
 
         self.density = density_handle
         self.w = birth_model.w
@@ -28,34 +31,43 @@ class PHDfilter:
 
     def predict(self, motion_model: motionmodel, P_S: float):
 
-        # Predict each Gaussian component in the Poisson intensity for pre-existing objects
+        # Predict each Gaussian component in the Poisson intensity for
+        # pre-existing objects
         for l in range(len(self.obj_state)):
-            thisState = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
-            pred_ = GaussianDensity.GaussianDensity.predict(
-                thisState, motion_model)
+            state_ = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
+            pred_ = gaussiandensity.gaussiandensity.predict(
+                state_, motion_model)
 
             # Re-definition namedtuple
             pred_state = PHDComp(pred_.x, pred_.P)
             self.obj_state.append(pred_state)
 
-        # Add Poisson birth intensity to the Poisson intensity for pre-existing objects
+        # Add Poisson birth intensity to the Poisson intensity for pre-existing
+        # objects
         w_ = self.w + np.log(P_S)
-        allW = np.concatenate((self.w, np.squeeze(w_)), axis=0)
+        allW = np.concatenate((self.w, w_), axis=0)
         self.w = np.squeeze(allW)
 
-    def update(self, z_: np.ndarray, meas_model: measmodel, P_D: float, intensity: float, gating_size: float):
+    def update(
+            self,
+            z_: np.ndarray,
+            meas_model: measmodel,
+            P_D: float,
+            intensity: float,
+            gating_size: float):
 
         # Construct update components resulted from missed detections
         misseddetect = self.obj_state
-        w_k = self.w + np.log(1-P_D)
+        w_k = self.w + np.log(1 - P_D)
 
-        # Perform ellipsoidal gating for each Gaussian component in the Poisson intensity
+        # Perform ellipsoidal gating for each Gaussian component in the Poisson
+        # intensity
         isZinGate = []
 
         for l in range(len(self.obj_state)):
-            thisState = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
-            [isZ, whichZinGate] = GaussianDensity.GaussianDensity.ellipsoidalGating(
-                thisState, z_, meas_model, gating_size)
+            state_ = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
+            [isZ, whichZinGate] = gaussiandensity.gaussiandensity.ellipsoidalGating(
+                state_, z_, meas_model, gating_size)
             isZinGate.append(isZ)
 
         # Construct Kalman update components with measurements inside the gates
@@ -64,20 +76,25 @@ class PHDfilter:
         KalmanZhat = []
 
         for l in range(len(self.obj_state)):
-            thisState = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
+            state_ = PHDComp(self.obj_state[l].x, self.obj_state[l].P)
 
-            H_ = meas_model.H(thisState.x)
-            zhat = meas_model.h(thisState.x)
-            S_ = np.matmul(H_, thisState.P).dot(H_.T) + meas_model.R
-            S_ = (S_+S_.T)/2
+            H_ = meas_model.H(state_.x)
+            zhat = meas_model.h(state_.x)
+            S_ = np.matmul(H_, state_.P).dot(H_.T) + meas_model.R
+            S_ = (S_ + S_.T) / 2
 
             # S^(-1)
             Sinv = np.linalg.inv(S_)
 
-            K_ = np.matmul(thisState.P, H_.T).dot(Sinv)
+            K_ = np.matmul(state_.P, H_.T).dot(Sinv)
 
             P_ = np.matmul(
-                (np.eye(self.obj_state[l].x.shape[0]) - np.matmul(K_, H_)), thisState.P)
+                (np.eye(
+                    self.obj_state[l].x.shape[0]) -
+                    np.matmul(
+                    K_,
+                    H_)),
+                state_.P)
 
             KalmanK.append(K_)
             KalmanP.append(P_)
@@ -89,15 +106,15 @@ class PHDfilter:
 
             if(len(z_[isZ_]) != 0):
 
-                thisState = PHDComp(
+                state_ = PHDComp(
                     self.obj_state[idx].x, self.obj_state[idx].P)
                 measIdx = np.nonzero(isZ_)
                 for l in range(np.count_nonzero(isZ_)):
                     thisDetected = PHDComp(np.squeeze(
-                        thisState.x+np.matmul(KalmanK[idx], z_[measIdx[0][l]] - KalmanZhat[idx])), KalmanP[idx])
+                        state_.x + np.matmul(KalmanK[idx], z_[measIdx[0][l]] - KalmanZhat[idx])), KalmanP[idx])
 
                     log_like = self.density.predictedLikelihood(
-                        thisState, z_[measIdx[0][l]], meas_model)
+                        state_, z_[measIdx[0][l]], meas_model)
                     wtilde = np.log(P_D) + self.w[idx] + log_like
 
                     wtilde_.append(wtilde)
@@ -117,7 +134,7 @@ class PHDfilter:
     def component_reduction(self, reduction: namedtuple):
 
         # Prune
-        idx = DensityUtils.prune(self.w, reduction.w_min)
+        idx = densityutils.prune(self.w, reduction.w_min)
 
         # Merge
         temp = []
@@ -126,11 +143,11 @@ class PHDfilter:
                 self.obj_state[val].x), self.obj_state[val].P)
             temp.append(s_)
 
-        ww, merged_comps = DensityUtils.merge(
+        ww, merged_comps = densityutils.merge(
             self.w[idx], temp, reduction.merg_th)
 
         # Cap
-        idx_cap = DensityUtils.cap(ww, reduction.M)
+        idx_cap = densityutils.cap(ww, reduction.M)
 
         if(idx_cap.shape[0] != 1):
             self.w = np.array([ww[i] for i in idx_cap])
@@ -142,10 +159,13 @@ class PHDfilter:
 
     def phd_state(self):
 
-        # Get a mean estimate of the cardinality of objects by taking the summation of the weights of the Gaussian components rounded to the nearest integer
+        # Get a mean estimate of the cardinality of objects by taking the
+        # summation of the weights of the Gaussian components rounded to the
+        # nearest integer
         n = np.min([np.rint(np.sum(np.exp(self.w))), self.w.size]).astype(int)
 
-        # Extract n object states from the means of the n Gaussian components with the highest weights
+        # Extract n object states from the means of the n Gaussian components
+        # with the highest weights
         idx_w_sorted = np.argsort(self.w)[::-1]
 
         temp = [self.obj_state[ii] for ii in idx_w_sorted]

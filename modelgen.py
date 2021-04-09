@@ -12,14 +12,21 @@ class modelgen:
         self.lambda_c = lambda_c
         self.range_c = range_c
         if range_c.shape[0] > 1:
-            V = (range_c[0][1]-range_c[0][0])*(range_c[1][1]-range_c[1][0])
+            V = (range_c[0][1] - range_c[0][0]) * \
+                (range_c[1][1] - range_c[1][0])
         else:
-            V = range_c[1]-range_c[0]
+            V = range_c[1] - range_c[0]
 
-        self.pdf_c = 1/V
+        self.pdf_c = 1 / V
         self.intensity_c = lambda_c * self.pdf_c
 
-    def groundtruth(self, n_births: int, x_0: np.ndarray, t_birth: np.ndarray, t_death: np.ndarray, K: int):
+    def groundtruth(
+            self,
+            n_births: int,
+            x_0: np.ndarray,
+            t_birth: np.ndarray,
+            t_death: np.ndarray,
+            K: int):
 
         self.n_births = n_births
         self.x_0 = x_0

@@ -7,9 +7,9 @@ import modelgen
 def measdatagen(data, meas_model: measmodel.measmodel, sensor_model: modelgen):
     """Measurement data generation function"""
 
-    MeasData = [[]]*sensor_model.K
+    MeasData = [[]] * sensor_model.K
 
-    for k in range(np.shape(data.X)[0]):
+    for k in range(len(data.N)):
 
         if (data.N[k] > 0):
             idx = np.where(np.random.rand(
