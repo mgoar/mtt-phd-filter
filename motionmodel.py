@@ -27,7 +27,7 @@ class motionmodel:
                                        T**3 / 2,
                                        0,
                                        T**2]])
-        self.f = lambda x: self.F * x
+        self.f = lambda x: np.matmul(self.F, x)
 
     def CTmodel(self, T: float, sigmaV: float, sigmaOmega: float):
 
