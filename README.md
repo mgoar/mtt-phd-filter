@@ -77,8 +77,8 @@ $$
 & \textrm{for each }  z \in Z_k \\
 & l := l+1 \\
 & \quad \textrm{for } j=1, \dots, J_{k \vert k-1} \\
-& \quad \quad w_{k}^{(lJ_{k \vert k-1}+j)} = p_{D,k} w_{k \vert k-1}^{(j)} \mathcal{N} \left(z; \hat{z}_{k \vert k-1}^{(j)}, S_k \right), \\
-& \quad \quad m_{k}^{(lJ_{k \vert k-1}+j)} = m_{k \vert k-1}^{(j)}+K_{k}^{(j)}(z-\hat{z}_{k\vert k-1}^{(j)}), \\
+& \quad \quad w_{k}^{(lJ_{k \vert k-1}+j)} = p_{D,k} w_{k \vert k-1}^{(j)} \mathcal{N} \left(z; z_{k \vert k-1}^{(j)}, S_k \right), \\
+& \quad \quad m_{k}^{(lJ_{k \vert k-1}+j)} = m_{k \vert k-1}^{(j)}+K_{k}^{(j)}(z-z_{k \vert k-1}^{(j)}), \\
 & \quad \quad P_{k}^{(lJ_{k \vert k-1}+j)} = P_{k \vert k}^{(j)}, \\
 & \quad \textrm{end} \\
 & \textrm{end} \\
